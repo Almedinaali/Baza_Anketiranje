@@ -1,0 +1,295 @@
+
+CREATE TABLE predmet (
+	id serial PRIMARY KEY,
+	naziv_predmeta character varying(45) NOT NULL,
+	semestar smallint NOT NULL,
+	smjer character varying(45) NOT NULL
+)
+
+
+CREATE TABLE zaposlenik (
+	id serial PRIMARY KEY,
+	ime character varying(45) NOT NULL,
+	prezime character varying(45) NOT NULL,
+	datum_rodjenja date,
+	email character varying(45),
+	broj_telefona character varying(45),
+	radno_mjesto character varying(45) NOT NULL
+)
+
+
+CREATE TABLE zaposlenik_predmet (
+	zaposlenik_id integer NOT NULL REFERENCES zaposlenik,
+	predmet_id integer NOT NULL REFERENCES predmet,
+	PRIMARY KEY (zaposlenik_id, predmet_id)
+)
+
+
+CREATE TABLE fakultet (
+	id serial PRIMARY KEY,
+	naziv_fakulteta character varying(100) UNIQUE NOT NULL,
+	adresa character varying(100),
+	broj_telefona character varying(45)
+)
+
+
+CREATE TABLE odsjek (
+	id serial PRIMARY KEY,
+	naziv_odsjeka character varying(45) UNIQUE NOT NULL,
+	fakultet_id integer NOT NULL REFERENCES fakultet
+)
+
+
+CREATE TABLE smjer (
+	id serial PRIMARY KEY,
+	naziv_smjera character varying(45) UNIQUE NOT NULL,
+	odsjek_id integer NOT NULL REFERENCES odsjek
+)
+
+
+CREATE TABLE smjer_predmet (
+	smjer_id integer NOT NULL REFERENCES smjer,
+	predmet_id integer NOT NULL REFERENCES predmet,
+	PRIMARY KEY (smjer_id, predmet_id)
+)
+
+
+CREATE TABLE student (
+	id serial PRIMARY KEY,
+	ime character varying(45) NOT NULL,
+	prezime character varying(45) NOT NULL,
+	datum_rodjenja date,
+	mjesto_rodjenja character varying(45),
+	JMB character varying(45) UNIQUE NOT NULL,
+	spol character varying(10),
+	odsjek character varying(45),
+	smjer character varying(45) NOT NULL,
+	trenutni_semestar integer NOT NULL,
+	broj_indeksa character varying(45) UNIQUE NOT NULL
+)
+
+
+CREATE TABLE student_predmet (
+	student_id integer NOT NULL REFERENCES student,
+	predmet_id integer NOT NULL REFERENCES predmet,
+	PRIMARY KEY (student_id, predmet_id)
+)
+
+
+CREATE TABLE anketa (
+	id serial PRIMARY KEY,
+	predmet_id integer NOT NULL REFERENCES predmet
+)
+
+
+CREATE TABLE pitanje (
+	id serial PRIMARY KEY,
+	tekst_pitanja character varying(100) NOT NULL,
+	tip_pitanja character varying(100) NOT NULL,
+	pitanje_za character varying(45) NOT NULL
+)
+
+
+CREATE TABLE anketa_pitanje (
+	anketa_id integer NOT NULL REFERENCES anketa,
+	pitanje_id integer NOT NULL REFERENCES pitanje,
+	PRIMARY KEY (anketa_id, pitanje_id)
+)
+
+
+CREATE TABLE odgovor_studenta (
+	id serial PRIMARY KEY,
+	vrijeme_unosa timestamp NOT NULL DEFAULT NOW(),
+	tekstualni_odgovor character varying(45),
+	numericki_izbor integer,
+	pitanje_id integer NOT NULL REFERENCES pitanje
+)
+
+
+CREATE TABLE kod (
+	kod character varying(45) PRIMARY KEY
+)
+
+
+CREATE TABLE anketa_kod (
+	anketa_id integer NOT NULL REFERENCES anketa,
+	kod_kod character varying(45) NOT NULL REFERENCES kod,
+	PRIMARY KEY (anketa_id, kod_kod)
+)
+
+/*//////////////////////////////////////////////////////////////////////////////// */
+
+
+INSERT INTO predmet (naziv_predmeta, semestar, smjer) VALUES 
+	('Baze podataka', 5, 'TKN'),
+	('Analiza i sinteza algoritama', 5, 'TKN'),
+	('Operaciona istrazivanja', 5, 'TKN'),
+	('Razvoj softvera', 5, 'TKN'),
+	('Web programiranje', 5, 'TKN'),
+	('Odabrana poglavlja kompjuterskih nauka', 5, 'TKN'),
+	('Statistika I', 4, 'TKN'),
+	('Teorija izracunljivosti', 4, 'TKN'),
+	('Raèunarske mreže', 4, 'TKN'),
+	('Operativni sistemi', 4, 'TKN'),
+	('Algebra za kompjuterske nauke', 4, 'TKN'),
+	('Engleski jezik', 4, 'TKN'),
+	('Algebra I', 5, 'MI'),
+	('Baze podataka', 5, 'MI'),
+	('Web programiranje', 5, 'MI'),
+	('Kompleksna analiza I', 5, 'MI'),
+	('Pedagogija', 5, 'MI'),
+	('Dokimologija', 5, 'MI'),
+	('Statistika I', 4, 'PM'),
+	('Numericka analiza', 4, 'PM'),
+	('Topologija', 4, 'PM'),
+	('Finansijska matematika', 4, 'PM'),
+	('Parcijalne diferencijalne jednadzbe', 4, 'PM'),
+	('Engleski jezik', 4, 'PM'),
+	('Algebra I', 5, 'PM'),
+	('Baze podataka', 5, 'PM'),
+	('Aktuarska matematika', 5, 'PM'),
+	('Kompleksna analiza I', 5, 'PM'),
+	('Operaciona istrazivanja', 5, 'PM'),
+	('Kriptologija', 5, 'PM');
+
+
+INSERT INTO zaposlenik (ime, prezime, datum_rodjenja, email, broj_telefona, radno_mjesto) VALUES
+	('Elmedin', 'Selmanovic', '1975-01-01', 'eselmanovic@pmf.unsa.ba', '++387 33 279 959', 'profesor'),
+	('Adis', 'Alihodzic', '1984-01-01', 'adis.alihodzic@pmf.unsa.ba', '++387 33 275 959', 'profesor'),
+	('Sead', 'Delalic', '1992-01-01', 'delalic.sead@gmail.com', '++387 33 279 576', 'asistent'),
+	('Admir', 'Besirevic', '1992-05-01', 'besirevic.admir@gmail.com', '++387 33 279 535', 'asistent');
+
+
+INSERT INTO zaposlenik_predmet VALUES
+	(1, 47),
+	(1, 48),
+	(2, 43),
+	(3, 47),
+	(3, 48),
+	(3, 43),
+	(4, 44);
+
+
+INSERT INTO fakultet (naziv_fakulteta, adresa, broj_telefona) VALUES
+	('Prirodno-matematicki', 'Zmaja od Bosne 33-35, 71000 Sarajevo, BiH', '++ 387 33 279 874');
+	
+
+INSERT INTO odsjek (naziv_odsjeka, fakultet_id) VALUES 
+	('Matematika', 1),
+	('Biologija', 1),
+	('Hemija', 1),
+	('Fizika', 1),
+	('Geografija', 1);
+	
+
+INSERT INTO smjer (naziv_smjera, odsjek_id) VALUES
+	('TKN', 1),
+	('PM', 1),
+	('MI', 1),
+	('MA', 1);
+
+
+INSERT INTO smjer_predmet VALUES
+	(1, 43),
+	(1, 44),
+	(1, 45),
+	(1, 46),
+	(1, 47),
+	(1, 48),
+	(1, 49),
+	(1, 50),
+	(1, 51),
+	(1, 52),
+	(1, 53),
+	(1, 54),
+	(2, 61),
+	(2, 62),
+	(2, 63),
+	(2, 64),
+	(2, 65),
+	(2, 66),
+	(2, 67),
+	(2, 68),
+	(3, 55),
+	(3, 56),
+	(3, 57),
+	(3, 58),
+	(3, 59),
+	(3, 60);
+
+
+INSERT INTO student (ime, prezime, datum_rodjenja, JMB, spol, odsjek, smjer, trenutni_semestar, broj_indeksa) VALUES
+	('Almedina', 'Alibasic', '1998-05-25', '2505998196028', 'Z', 'Matematika', 'TKN', 5, '5528/M'),
+	('Jasko', 'Jaskic', '1997-05-06', '0605997196828', 'M', 'Matematika', 'TKN', 5, '5535/M'),
+	('Lila', 'Lilic', '1995-01-25', '2501995192528', 'Z', 'Matematika', 'PM', 5, '5456/M'),
+	('Jana', 'Janic', '1996-03-21', '2103998196028', 'Z', 'Matematika', 'TKN', 4, '5655/M'),
+	('Rino', 'Rinic', '1998-11-05', '0511998196028', 'M', 'Matematika', 'MI', 5, '5621/M'),
+	('Sema', 'Semic', '1997-08-04', '0408998196028', 'M', 'Matematika', 'PM', 4, '5704/M');
+
+
+INSERT INTO student_predmet VALUES
+	(6, 43),
+	(8, 68),
+	(10, 56);
+
+
+INSERT INTO anketa (predmet_id) VALUES 
+	(43), (56), (68), (46), (47);
+
+
+INSERT INTO pitanje (tekst_pitanja, tip_pitanja, pitanje_za) VALUES
+	('Smatrate li da je ovaj predmet suviše zahtjevan?', 'DA/NE', 'predmet'),
+	('Šta vam se najviše dopalo vezano za ovaj predmet?', 'TEKST-ODGOVOR', 'predmet'),
+	('Kako biste ocijenili rad profesora na ovom predmetu?', 'OCJENA', 'profesor'),
+	('Da li profesor redovno održava predavanja iz ovog predmeta?', 'VISESTRUKI-IZBOR', 'profesor'),
+	('Kako biste ocijenili rad asistenta na ovom predmetu?', 'OCJENA', 'asistent'),
+	('Da li asistent redovno održava vježbe iz ovog predmeta?', 'VISESTRUKI-IZBOR', 'asistent');
+
+
+INSERT INTO anketa_pitanje VALUES
+	(1, 1),
+	(1, 2),
+	(1, 3),
+	(1, 4),
+	(1, 5),
+	(1, 6),
+	(2, 1),
+	(2, 2),
+	(2, 3),
+	(2, 4),
+	(2, 5),
+	(2, 6);
+
+
+INSERT INTO odgovor_studenta (tekstualni_odgovor, numericki_izbor, pitanje_id) VALUES 
+	('da', null, 1),
+	('pohvale za citav kurs', null, 2),
+	(null, 4, 3),
+	('da', null, 4),
+	(null, 4, 5),
+	('da', null, 6),
+	('ne', null, 1),
+	('nista mi se nije dopalo', null, 2),
+	(null, 2, 3),
+	('uglavnom', null, 4),
+	(null, 2, 5),
+	('nisam siguran', null, 6),
+	('ne', null, 1),
+	('rad u mysql workbenchu', null, 2),
+	(null, 1, 3),
+	('nisam siguran', null, 4),
+	(null, 3, 5),
+	('uglavnom', null, 6),
+	('da', null, 1),
+	('ne valja', null, 2),
+	(null, 3, 3),
+	('da', null, 4),
+	(null, 3, 5),
+	('da', null, 6);
+
+/*//////////////////////////////////////////////////////////////////////// */
+
+
+
+
+
